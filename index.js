@@ -31,7 +31,11 @@ app.get("/books",async(req,res)=>{
   const result = await booksCollection.find().toArray()
   res.send(result)
 })
-// http://localhost:5000/add-books
+app.get("/new-arrivals",async(req,res)=>{
+  const result=await booksCollection.find().sort({addedDate:-1}).limit(6).toArray()
+  res.send(result)
+})
+// http://localhost:5000/books
 http: app.post("/add-books", (req, res) => {
   const books=req.body
   const result=booksCollection.insertOne(books)
