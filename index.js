@@ -7,7 +7,7 @@ const port = 5000;
 app.use(cors())
 app.use(express.json())
 
-//http://localhost:5000/books
+//http://localhost:5000/my-books/:email
 
 const client = new MongoClient(process.env.MONGO_URI);
 
@@ -53,6 +53,12 @@ app.post("/borrows",(req,res)=>{
   const result = borrowsCollection.insertOne(borrowsData)
   res.send(result)
 });
+app.get('/my-books/:email',async(req,res)=>{
+  const getEmail=req.params.email 
+  const result =await booksCollection.find({addedBy:getEmail}).toArray()
+  res.send(result)
+
+})
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
