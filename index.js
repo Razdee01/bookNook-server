@@ -7,7 +7,7 @@ const port = 5000;
 app.use(cors())
 app.use(express.json())
 
-//http://localhost:5000/delete/:id
+//http://localhost:5000//patch/:id
 
 const client = new MongoClient(process.env.MONGO_URI);
 
@@ -62,6 +62,15 @@ app.get('/my-books/:email',async(req,res)=>{
 app.delete("/delete/:id",async(req,res)=>{
   const {id}=req.params
   const result = await booksCollection.deleteOne({_id: new ObjectId(id)})
+  res.send(result)
+})
+app.patch("/patch/:id",async(req,res)=>{
+  const {id}=req.params
+  const updateData=req.body
+  const result = await booksCollection.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: updateData },
+  );
   res.send(result)
 })
 
