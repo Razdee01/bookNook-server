@@ -7,7 +7,7 @@ const port = 5000;
 app.use(cors())
 app.use(express.json())
 
-//http://localhost:5000/my-books/:email
+//http://localhost:5000/delete/:id
 
 const client = new MongoClient(process.env.MONGO_URI);
 
@@ -58,6 +58,11 @@ app.get('/my-books/:email',async(req,res)=>{
   const result =await booksCollection.find({addedBy:getEmail}).toArray()
   res.send(result)
 
+})
+app.delete("/delete/:id",async(req,res)=>{
+  const {id}=req.params
+  const result = await booksCollection.deleteOne({_id: new ObjectId(id)})
+  res.send(result)
 })
 
 app.listen(port, () => {
