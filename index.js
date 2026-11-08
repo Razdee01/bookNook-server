@@ -7,7 +7,7 @@ const port = 5000;
 app.use(cors())
 app.use(express.json())
 
-//http://localhost:5000//patch/:id
+//http://localhost:5000/borrows/:email
 
 const client = new MongoClient(process.env.MONGO_URI);
 
@@ -59,11 +59,26 @@ app.get('/my-books/:email',async(req,res)=>{
   res.send(result)
 
 })
+
+app.get("/borrows/:email",async(req,res)=>{
+  const email=req.params.email
+  const result= await borrowsCollection.find({userEmail:email}).toArray()
+  res.send(result)
+})
+
 app.delete("/delete/:id",async(req,res)=>{
   const {id}=req.params
   const result = await booksCollection.deleteOne({_id: new ObjectId(id)})
   res.send(result)
 })
+// DELETE or PATCH endpoint to remove/complete a borrow record
+app.delete('/borrows/:id', async (req, res) => {
+  const borrowId = req.params.id;
+     const result = await borrowsCollection.deleteOne({
+       _id: new ObjectId(borrowId),
+     });
+      res.send(result)
+});
 app.patch("/patch/:id",async(req,res)=>{
   const {id}=req.params
   const updateData=req.body
