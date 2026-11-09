@@ -35,7 +35,7 @@ const verifyToken = async (req, res, next) => {
   const token = authHeader.split(" ")[1];
 
   const JWKS = createRemoteJWKSet(
-    new URL("http://localhost:3000/api/auth/jwks"),
+    new URL(`${process.env.CLIENT_URL}/api/auth/jwks`),
   );
 
   try {
@@ -136,3 +136,4 @@ app.patch("/patch/:id", async (req, res) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
+export default app
