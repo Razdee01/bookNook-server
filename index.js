@@ -71,10 +71,32 @@ app.post("/add-books",verifyToken, (req, res) => {
   const result = booksCollection.insertOne(books);
   res.send(result);
 });
-app.post("/borrows", (req, res) => {
-  const borrowsData = req.body;
-  const result = borrowsCollection.insertOne(borrowsData);
-  res.send(result);
+app.post("/borrows", verifyToken, async (req, res) => {
+  const { bookId, userEmail } = req.body;
+
+  if (!bookId || !userEmail) {
+    return res.status(400).send({ msg: "bookId and userEmail are required" });
+  }
+
+  const alreadyBorrowed = await borrowsCollection.findOne({
+    bookId,
+    userEmail,
+  });
+  if (alreadyBorrowed) {
+    return res.status(409).send({ msg: "You have already borrowed this book" });
+  }
+
+  try {
+    const result = await borrowsCollection.insertOne(req.body);
+    res.send(result);
+  } catch (err) {
+    if (err.code === 11000) {
+      return res
+        .status(409)
+        .send({ msg: "You have already borrowed this book" });
+    }
+    res.status(500).send({ msg: "Failed to borrow book" });
+  }
 });
 app.get("/my-books/:email",verifyToken, async (req, res) => {
   const getEmail = req.params.email;
